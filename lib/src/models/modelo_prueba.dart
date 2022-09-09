@@ -2,32 +2,32 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-ModeloPrueba modeloPruebaFromJson(String str) =>
-    ModeloPrueba.fromJson(json.decode(str));
+ModeloPruebaModel modeloPruebaFromJson(String str) =>
+    ModeloPruebaModel.fromJson(json.decode(str));
 
-String modeloPruebaToJson(ModeloPrueba data) => json.encode(data.toJson());
+String modeloPruebaToJson(ModeloPruebaModel data) => json.encode(data.toJson());
 
-class ModeloPrueba extends Equatable {
+class ModeloPruebaModel extends Equatable {
   final String id;
   final String descripcion;
 
-  const ModeloPrueba({
+  const ModeloPruebaModel({
     this.id = '',
     this.descripcion = '',
   });
 
-  ModeloPrueba copyWith({
+  ModeloPruebaModel copyWith({
     String? id,
-    String? descripcion,
+    Map<String, dynamic>? data,
   }) {
-    return ModeloPrueba(
+    return ModeloPruebaModel(
       id: id ?? this.id,
-      descripcion: descripcion ?? this.descripcion,
+      descripcion: data?['descripcion'] ?? descripcion,
     );
   }
 
-  factory ModeloPrueba.fromJson(Map<String, dynamic> json) {
-    final chatbotModel = ModeloPrueba(
+  factory ModeloPruebaModel.fromJson(Map<String, dynamic> json) {
+    final chatbotModel = ModeloPruebaModel(
       id: (json.containsKey("id")) ? json["id"].toString() : '',
       descripcion: (json.containsKey("descripcion"))
           ? json["descripcion"].toString()
