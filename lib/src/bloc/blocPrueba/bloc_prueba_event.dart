@@ -24,8 +24,12 @@ class OnValidarModeloPrueba extends BlocPruebaEvent {
 }
 
 class OnEliminarModeloPrueba extends BlocPruebaEvent {
-  final String idModeloPrueba;
-  const OnEliminarModeloPrueba({required this.idModeloPrueba});
+  //final String idModeloPrueba;
+  const OnEliminarModeloPrueba(); //{required this.idModeloPrueba}
+}
+
+class OnGuardarModeloPrueba extends BlocPruebaEvent {  
+  const OnGuardarModeloPrueba();
 }
 
 class OnOrdenarModeloPrueba extends BlocPruebaEvent {

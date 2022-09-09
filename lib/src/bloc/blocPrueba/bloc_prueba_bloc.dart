@@ -11,8 +11,10 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
     on<OnNuevoModeloPrueba>(_onNuevoModeloPrueba);
     on<OnModificarModeloPrueba>(_onModificarModeloPrueba);
     on<OnValidarModeloPrueba>(_onValidarModeloPrueba);
+    on<OnGuardarModeloPrueba>(_onOnGuardarModeloPrueba);
     on<OnEliminarModeloPrueba>(_onEliminarModeloPrueba);
-    // on<OnOrdenarModeloPrueba>(_onOrdenarModeloPrueba);
+
+    // on<OnOrdenarModeloPrueba>(_onOrdenarModeloPrueba); //lstBotCategoria.sort((a, b) => a.descripcion.compareTo(b.descripcion));
   }
 
   void _onNuevoModeloPrueba(OnNuevoModeloPrueba event, Emitter emit) async {
@@ -50,33 +52,24 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(
-          isWorking: false,
-          error: e.toString(),
-          accion: Environment.blocOnModificarModeloPrueba));
+      emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnModificarModeloPrueba));
     }
   }
 
-  Future<void> _onValidarModeloPrueba(
-      OnValidarModeloPrueba event, Emitter emit) async {
+  Future<void> _onValidarModeloPrueba(OnValidarModeloPrueba event, Emitter emit) async {
     try {
-      emit(state.copyWith(
-          isWorking: true,
-          error: '',
-          accion: Environment.blocOnValidarModeloPrueba));
+      emit(state.copyWith(isWorking: true, error: '', accion: Environment.blocOnValidarModeloPrueba));
 
       String error = '';
       String campoError = '';
       ModeloPruebaModel pruebaModel = state.pruebaModel;
 
       if (pruebaModel.descripcion.isEmpty) {
-          error = 'Falta Definir la descripcion';
-          campoError = 'descripcion';
-        } else {
-          pruebaModel = pruebaModel
-              .copyWith(data: {'descripcion': pruebaModel.descripcion.trim()});
-        }
-      
+        error = 'Falta Definir la descripcion';
+        campoError = 'descripcion';
+      } else {
+        pruebaModel = pruebaModel.copyWith(data: {'descripcion': pruebaModel.descripcion.trim()});
+      }
 
       emit(state.copyWith(
           isWorking: false,
@@ -86,45 +79,58 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
           pruebaModel: pruebaModel,
           accion: Environment.blocOnValidarModeloPrueba));
     } catch (e) {
-      emit(state.copyWith(
-          isWorking: false,
-          error: e.toString(),
-          accion: Environment.blocOnValidarModeloPrueba));
+      emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnValidarModeloPrueba));
     }
   }
 
-  Future<void> _onEliminarModeloPrueba(
-      OnEliminarModeloPrueba event, Emitter emit) async {
+  Future<void> _onEliminarModeloPrueba(OnEliminarModeloPrueba event, Emitter emit) async {
     try {
-      emit(state.copyWith(
-          isWorking: true,
-          error: '',
-          accion: Environment.blocOnValidarModeloPrueba));
+      emit(state.copyWith(isWorking: true, error: '', accion: Environment.blocOnValidarModeloPrueba));
 
-      
       ModeloPruebaModel pruebaModel = state.pruebaModel;
+      List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
 
-      if (pruebaModel.descripcion.isEmpty) {
-          error = 'Falta Definir la descripcion';
-          campoError = 'descripcion';
-        } else {
-          pruebaModel = pruebaModel
-              .copyWith(data: {'descripcion': pruebaModel.descripcion.trim()});
+      //TODO: Controlar que lista no esta vacia???
+      for (ModeloPruebaModel modelo in state.lstpruebaModel) {
+        if (modelo.id == pruebaModel.id) {
+          lstpruebaModel.remove(modelo);
+          print('Se elimino ${modelo.descripcion}');
         }
-      
+      }
 
       emit(state.copyWith(
           isWorking: false,
-          error: error,
           msjStatus: '',
-          campoError: campoError,
           pruebaModel: pruebaModel,
+          lstpruebaModel: lstpruebaModel,
           accion: Environment.blocOnValidarModeloPrueba));
     } catch (e) {
+      emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnValidarModeloPrueba));
+    }
+  }
+
+  Future<void> _onOnGuardarModeloPrueba(OnGuardarModeloPrueba event, Emitter emit) async {
+    try {
+      emit(state.copyWith(isWorking: true, accion: Environment.blocOnGuardarModeloPrueba));
+
+      ModeloPruebaModel pruebaModel = state.pruebaModel;
+      List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
+      if (state.error.isEmpty) {
+        lstpruebaModel.add(pruebaModel);
+      }
+
       emit(state.copyWith(
-          isWorking: false,
-          error: e.toString(),
-          accion: Environment.blocOnValidarModeloPrueba));
+          isWorking: false, 
+          pruebaModel: pruebaModel, 
+          lstpruebaModel: lstpruebaModel,
+          accion: Environment.blocOnGuardarModeloPrueba,
+      ));
+
+      // if (error.isEmpty) {
+      //   add(const OnObtenerlstBotCategoria());
+      // }
+    } catch (e) {
+      emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnGuardarModeloPrueba));
     }
   }
 }
