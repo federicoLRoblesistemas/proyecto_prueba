@@ -52,7 +52,7 @@ class ViewLista extends StatelessWidget {
       builder: (context, state) {
         return Center(
             child: Card(
-          child: Container(
+          child: SizedBox(
             height: 600,
             width: 500,
             child: Column(
@@ -61,6 +61,16 @@ class ViewLista extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
+                TextButton(onPressed: (){
+                  context.read<BlocPruebaBloc>().add(const OnOrdenarModeloPrueba());
+                }, 
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const[
+                    Icon(Icons.arrow_drop_down),
+                    Text('Ordenar'),
+                  ],
+                )),
                 state.lstpruebaModel.isNotEmpty
                     ? DataTable(
                         horizontalMargin: 0,

@@ -13,8 +13,7 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
     on<OnValidarModeloPrueba>(_onValidarModeloPrueba);
     on<OnGuardarModeloPrueba>(_onOnGuardarModeloPrueba);
     on<OnEliminarModeloPrueba>(_onEliminarModeloPrueba);
-
-    // on<OnOrdenarModeloPrueba>(_onOrdenarModeloPrueba); //lstBotCategoria.sort((a, b) => a.descripcion.compareTo(b.descripcion));
+    on<OnOrdenarModeloPrueba>(_onOrdenarModeloPrueba);
   }
 
   void _onNuevoModeloPrueba(OnNuevoModeloPrueba event, Emitter emit) async {
@@ -144,6 +143,25 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
       // }
     } catch (e) {
       emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnGuardarModeloPrueba));
+    }
+  }
+
+  //
+  Future<void> _onOrdenarModeloPrueba(OnOrdenarModeloPrueba event, Emitter emit) async {
+    try {
+      emit(state.copyWith(isWorking: true, error: '', accion: Environment.blocOnOrdenarModeloPrueba));
+      String error = '';
+
+      List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
+      if (lstpruebaModel.isNotEmpty) {
+        lstpruebaModel.sort((a, b) => int.parse(a.id).compareTo(int.parse(b.id)));
+      } else {
+        error = 'La lista cuenta solo con un elemento';
+      }
+
+      emit(state.copyWith(isWorking: false, lstpruebaModel: lstpruebaModel, error: error, accion: Environment.blocOnOrdenarModeloPrueba));
+    } catch (e) {
+      emit(state.copyWith(isWorking: false, accion: Environment.blocOnOrdenarModeloPrueba));
     }
   }
 }
