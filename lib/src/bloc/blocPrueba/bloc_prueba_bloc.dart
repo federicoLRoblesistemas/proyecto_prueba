@@ -20,7 +20,7 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
   void _onNuevoModeloPrueba(OnNuevoModeloPrueba event, Emitter emit) async {
     emit(state.copyWith(isWorking: true, pruebaModel: const ModeloPruebaModel(), error: '', accion: Environment.blocOnNuevoModeloPrueba));
 
-    emit(state.copyWith(isWorking: false, pruebaModel: const ModeloPruebaModel(), error: '', accion: Environment.blocOnNuevoModeloPrueba));
+    emit(state.copyWith(isWorking: false, error: '', accion: Environment.blocOnNuevoModeloPrueba));
   }
 
   void _onModificarModeloPrueba(OnModificarModeloPrueba event, Emitter emit) async {
@@ -62,13 +62,14 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
 
       String error = '';
       String campoError = '';
-      ModeloPruebaModel pruebaModel = state.pruebaModel;
+      ModeloPruebaModel pruebaModel = event.modeloPrueba;
 
       if (pruebaModel.descripcion.isEmpty) {
         error = 'Falta Definir la descripcion';
         campoError = 'descripcion';
-      } else {
-        pruebaModel = pruebaModel.copyWith(data: {'descripcion': pruebaModel.descripcion.trim()});
+      }  
+      if(error.isEmpty){
+        pruebaModel = pruebaModel.copyWith(data: {'descripcion': pruebaModel.descripcion.trim(),},id:pruebaModel.id );
       }
 
       emit(state.copyWith(
@@ -120,10 +121,10 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
       }
 
       emit(state.copyWith(
-          isWorking: false, 
-          pruebaModel: pruebaModel, 
-          lstpruebaModel: lstpruebaModel,
-          accion: Environment.blocOnGuardarModeloPrueba,
+        isWorking: false,
+        pruebaModel: pruebaModel,
+        lstpruebaModel: lstpruebaModel,
+        accion: Environment.blocOnGuardarModeloPrueba,
       ));
 
       // if (error.isEmpty) {

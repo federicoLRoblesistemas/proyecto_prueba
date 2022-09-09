@@ -37,7 +37,7 @@ class ModeloPruebaModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        "proyectId": id,        
+        "id": id,        
         "descripcion": descripcion,        
       };
   

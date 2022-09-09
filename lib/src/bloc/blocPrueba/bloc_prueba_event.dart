@@ -18,9 +18,8 @@ class OnModificarModeloPrueba extends BlocPruebaEvent {
 
 class OnValidarModeloPrueba extends BlocPruebaEvent {
   final ModeloPruebaModel modeloPrueba;
-  final int pagina;
   const OnValidarModeloPrueba(
-      {required this.modeloPrueba, required this.pagina});
+      {required this.modeloPrueba});
 }
 
 class OnEliminarModeloPrueba extends BlocPruebaEvent {
