@@ -34,7 +34,6 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
         ),
       );
 
-      String error = '';
       ModeloPruebaModel pruebaModel = const ModeloPruebaModel();
 
       for (ModeloPruebaModel modelo in state.lstpruebaModel) {
@@ -65,11 +64,19 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
       ModeloPruebaModel pruebaModel = event.modeloPrueba;
 
       if (pruebaModel.descripcion.isEmpty) {
-        error = 'Falta Definir la descripcion';
+        error = 'Falta Definir la descripción';
         campoError = 'descripcion';
-      }  
-      if(error.isEmpty){
-        pruebaModel = pruebaModel.copyWith(data: {'descripcion': pruebaModel.descripcion.trim(),},id:pruebaModel.id );
+      }
+      if (pruebaModel.id.isEmpty) {
+        error = 'Falta Definir el ID';
+        campoError = 'id';
+      }
+
+      ///se busca coincidencias en la lista para guardar o modificar
+      if (error.isEmpty) {
+        pruebaModel = pruebaModel.copyWith(data: {
+          'descripcion': pruebaModel.descripcion.trim(),
+        }, id: pruebaModel.id);
       }
 
       emit(state.copyWith(
@@ -86,7 +93,7 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
 
   Future<void> _onEliminarModeloPrueba(OnEliminarModeloPrueba event, Emitter emit) async {
     try {
-      emit(state.copyWith(isWorking: true, error: '', accion: Environment.blocOnValidarModeloPrueba));
+      emit(state.copyWith(isWorking: true, error: '', accion: Environment.blocOnEliminarModeloPrueba));
 
       ModeloPruebaModel pruebaModel = state.pruebaModel;
       List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
@@ -95,7 +102,6 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
       for (ModeloPruebaModel modelo in state.lstpruebaModel) {
         if (modelo.id == pruebaModel.id) {
           lstpruebaModel.remove(modelo);
-          print('Se elimino ${modelo.descripcion}');
         }
       }
 
@@ -104,9 +110,9 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
           msjStatus: '',
           pruebaModel: pruebaModel,
           lstpruebaModel: lstpruebaModel,
-          accion: Environment.blocOnValidarModeloPrueba));
+          accion: Environment.blocOnEliminarModeloPrueba));
     } catch (e) {
-      emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnValidarModeloPrueba));
+      emit(state.copyWith(isWorking: false, error: e.toString(), accion: Environment.blocOnEliminarModeloPrueba));
     }
   }
 
@@ -116,7 +122,13 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
 
       ModeloPruebaModel pruebaModel = state.pruebaModel;
       List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
+
       if (state.error.isEmpty) {
+        for (ModeloPruebaModel modelo in state.lstpruebaModel) {
+          if (modelo.id == pruebaModel.id) {
+            lstpruebaModel.removeWhere((element) => element.id == pruebaModel.id);
+          }
+        }
         lstpruebaModel.add(pruebaModel);
       }
 
