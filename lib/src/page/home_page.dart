@@ -25,7 +25,7 @@ class ViewLista extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BlocPruebaBloc, BlocPruebaState>(
+    return BlocListener<BlocPruebaBloc, BlocPruebaState>(
       listenWhen: (previous, current) => !current.isWorking,
       listener: (context, state) {
         if (state.error.isEmpty) {
@@ -48,65 +48,167 @@ class ViewLista extends StatelessWidget {
             Navigator.of(context).pop();
           }
         }
-      },
-      builder: (context, state) {
-        return Center(
-            child: Card(
-          child: SizedBox(
-            height: 600,
-            width: 500,
-            child: Column(
-              children: [
-                const Text('Lista de elementos'),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextButton(onPressed: (){
-                  context.read<BlocPruebaBloc>().add(const OnOrdenarModeloPrueba());
-                }, 
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const[
-                    Icon(Icons.arrow_drop_down),
-                    Text('Ordenar'),
-                  ],
-                )),
-                state.lstpruebaModel.isNotEmpty
-                    ? DataTable(
-                        horizontalMargin: 0,
-                        columnSpacing: 0,
-                        headingRowHeight: 20,
-                        dataRowHeight: 20,
-                        headingRowColor: MaterialStateProperty.all<Color>(const Color(0xffF5F5F5)),
-                        columns: const [
-                            DataColumn(label: Text('ID del Item')),
-                            DataColumn(label: Text('Descripción del Item'))
-                          ],
-                        rows: [
-                            ...state.lstpruebaModel
-                                .map((e) => DataRow(cells: [
-                                      DataCell(
-                                        Text(e.id),
-                                        onTap: () => context.read<BlocPruebaBloc>().add(OnModificarModeloPrueba(idModeloPrueba: e.id)),
-                                      ),
-                                      DataCell(
-                                        Text(e.descripcion),
-                                        onTap: () => context.read<BlocPruebaBloc>().add(OnModificarModeloPrueba(idModeloPrueba: e.id)),
-                                      ),
-                                    ]))
-                                .toList(),
-                          ])
-                    : const Text('No hay elementos en la lista'),
-                TextButton(
-                    onPressed: () {
-                      context.read<BlocPruebaBloc>().add(const OnNuevoModeloPrueba());
-                    },
-                    child: const Text('Nuevo Modelo'))
-              ],
+      },child:Scaffold(
+          body: Center(
+              child: Card(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              height: 500,
+              width: 600,
+              child: Column(
+                children: const[
+                   _TituloPrincipal(),
+                   SizedBox(
+                    height: 20,
+                  ),
+                   _BotonOrdenarTabla(),
+                   _TablaElementos(),
+                   SizedBox(
+                    height: 25,
+                  ),
+                  _BotonNuevoModelo()
+                ],
+              ),
             ),
-          ),
-        ));
+          )),
+        )    
+    );
+  }
+}
+
+class _BotonNuevoModelo extends StatelessWidget {
+  const _BotonNuevoModelo({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(
+          Theme.of(context).primaryColor,
+        ),
+      ),
+      onPressed: () {
+        context.read<BlocPruebaBloc>().add(const OnNuevoModeloPrueba());
       },
+      child: const Text(
+        'Nuevo Modelo',
+        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _TablaElementos extends StatelessWidget {
+  const _TablaElementos({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BlocPruebaBloc, BlocPruebaState>(
+      builder: (context, state) {
+        return Container(
+          constraints: const BoxConstraints(
+            minHeight: 150
+          ),
+          width: double.infinity,
+          child: DataTable(
+              horizontalMargin: 0,
+              columnSpacing: 0,
+              headingRowHeight: 20,
+              dataRowHeight: 20,
+              headingRowColor: MaterialStateProperty.all<Color>(const Color(0xffF5F5F5)),
+              columns: const [
+                DataColumn(
+                  label: Text(
+                    'ID del Item',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Descripción del Item',
+                  ),
+                ),
+              ],
+              rows: [
+                if (state.lstpruebaModel.isNotEmpty)
+                  ...state.lstpruebaModel
+                      .map(
+                        (e) => DataRow(
+                          cells: [
+                            DataCell(
+                              Text(e.id),
+                              onTap: () => context.read<BlocPruebaBloc>().add(OnModificarModeloPrueba(idModeloPrueba: e.id)),
+                            ),
+                            DataCell(
+                              Text(e.descripcion),
+                              onTap: () => context.read<BlocPruebaBloc>().add(OnModificarModeloPrueba(idModeloPrueba: e.id)),
+                            ),
+                          ],
+                        ),
+                      )
+                      .toList(),
+              ]),
+        );
+      },
+    );
+  }
+}
+
+class _BotonOrdenarTabla extends StatelessWidget {
+  const _BotonOrdenarTabla({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.centerRight,
+      width: double.infinity,
+      child: InkWell(
+        onTap: () {
+          context.read<BlocPruebaBloc>().add(const OnOrdenarModeloPrueba());
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(
+                Icons.arrow_drop_down,
+                color: Colors.black54,
+              ),
+              Text(
+                'Ordenar',
+                style: TextStyle(
+                color: Colors.black54,
+                fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TituloPrincipal extends StatelessWidget {
+  const _TituloPrincipal({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Lista de elementos',
+      style: TextStyle(
+        fontSize: 25,
+        color: Colors.black54,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }
@@ -192,17 +294,15 @@ class _PopAppAltaState extends State<PopAppAlta> {
 }
 
 class _ItemFormulario extends StatelessWidget {
-  const _ItemFormulario(
-      {
-        Key? key, 
-        required this.titulo, 
-        required this.valor, 
-        required this.onChanged, 
-        required this.isEditable,
-        this.margenInferior, 
-        this.isLabel = false, 
-        })
-      : super(key: key);
+  const _ItemFormulario({
+    Key? key,
+    required this.titulo,
+    required this.valor,
+    required this.onChanged,
+    required this.isEditable,
+    this.margenInferior,
+    this.isLabel = false,
+  }) : super(key: key);
 
   final String titulo;
   final String valor;
@@ -218,9 +318,7 @@ class _ItemFormulario extends StatelessWidget {
         Container(
           alignment: Alignment.topLeft,
           child: TextfieldModelWidget.estandar(
-            decoration: InputDecoration(
-              enabled: isEditable
-            ),
+            decoration: InputDecoration(enabled: isEditable),
             controller: TextEditingController(text: valor),
             maxWidth: 350,
             labelTitulo: ModeloPruebaModel.titulosFormulario[titulo]!,

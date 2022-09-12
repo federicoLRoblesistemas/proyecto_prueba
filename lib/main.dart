@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => BlocPruebaBloc(),
       child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Material App',
         home: HomePage(),
       ),
