@@ -120,15 +120,21 @@ class _TablaElementos extends StatelessWidget {
               headingRowHeight: 20,
               dataRowHeight: 20,
               headingRowColor: MaterialStateProperty.all<Color>(const Color(0xffF5F5F5)),
-              columns: const [
+              columns:  const [
                 DataColumn(
-                  label: Text(
-                    'ID del Item',
+                  label: Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text(
+                      'ID del Item',
+                    ),
                   ),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Descripción del Item',
+                  label: Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text(
+                      'Descripción del Item',
+                    ),
                   ),
                 ),
               ],
