@@ -110,6 +110,7 @@ class _TablaElementos extends StatelessWidget {
     return BlocBuilder<BlocPruebaBloc, BlocPruebaState>(
       builder: (context, state) {
         return Container(
+          color: const Color(0xffF5F5F5),
           constraints: const BoxConstraints(
             minHeight: 150
           ),
@@ -119,7 +120,7 @@ class _TablaElementos extends StatelessWidget {
               columnSpacing: 0,
               headingRowHeight: 20,
               dataRowHeight: 20,
-              headingRowColor: MaterialStateProperty.all<Color>(const Color(0xffF5F5F5)),
+              headingRowColor: MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.2)),
               columns:  const [
                 DataColumn(
                   label: Padding(
