@@ -156,7 +156,7 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
       if (lstpruebaModel.isNotEmpty) {
         lstpruebaModel.sort((a, b) => int.parse(a.id).compareTo(int.parse(b.id)));
       } else {
-        error = 'La lista cuenta solo con un elemento';
+        error = 'La lista que intenta ordenar se encuentra vacia';
       }
 
       emit(state.copyWith(isWorking: false, lstpruebaModel: lstpruebaModel, error: error, accion: Environment.blocOnOrdenarModeloPrueba));

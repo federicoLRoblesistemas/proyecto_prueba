@@ -3,7 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:proyecto_prueba/src/bloc/blocPrueba/bloc_prueba_bloc.dart';
+import 'package:proyecto_prueba/src/bloc/notificaciones/notificaciones_bloc.dart';
 import 'package:proyecto_prueba/src/global/environment.dart';
+import 'package:proyecto_prueba/src/models/notificacion.dart';
+import 'package:proyecto_prueba/src/widgets/notificacion_widget.dart';
 import 'package:proyecto_prueba/src/widgets/widgets.dart';
 
 class HomePage extends StatelessWidget {
@@ -11,8 +14,21 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: ViewLista(),
+    return Scaffold(
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          ViewLista(),
+          BlocBuilder<NotificacionesBloc, NotificacionesState>(
+            builder: (context, state) {
+              return Column(
+                  children: state.notificaciones.entries
+                      .map((e) => NotificacionWidget.agregaNotificacion(indice: e.key, notificacion: e.value))
+                      .toList());
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -25,29 +41,54 @@ class ViewLista extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<BlocPruebaBloc, BlocPruebaState>(
-      listenWhen: (previous, current) => !current.isWorking,
-      listener: (context, state) {
-        if (state.error.isEmpty) {
-          if (state.accion == Environment.blocOnModificarModeloPrueba || state.accion == Environment.blocOnNuevoModeloPrueba) {
-            showDialog<String>(context: context, builder: (context) => const PopAppAlta());
-            log(state.accion);
+        listenWhen: (previous, current) => !current.isWorking,
+        listener: (context, state) {
+          if (state.error.isEmpty) {
+            if (state.accion == Environment.blocOnModificarModeloPrueba || state.accion == Environment.blocOnNuevoModeloPrueba) {
+              showDialog<String>(context: context, builder: (context) => const PopAppAlta());
+              log(state.accion);
+            }
+            if (state.accion == Environment.blocOnValidarModeloPrueba) {
+              log(state.accion);
+              context.read<BlocPruebaBloc>().add(const OnGuardarModeloPrueba());
+            }
+            if (state.accion == Environment.blocOnGuardarModeloPrueba) {
+              context.read<NotificacionesBloc>().add(
+                OnNuevaNotificacionEvent(
+                  const Notificacion(
+                    descripcion: 'Item guardado con exito!',
+                    tipoNotificacion: TipoNotificacion.confirmacion,
+                    titulo: 'Exito',
+                  ),
+                ),
+              );
+              Navigator.of(context).pop();
+            }
+            if (state.accion == Environment.blocOnEliminarModeloPrueba) {
+              context.read<NotificacionesBloc>().add(
+                OnNuevaNotificacionEvent(
+                  const Notificacion(
+                    descripcion: 'Item eliminado con exito!',
+                    tipoNotificacion: TipoNotificacion.confirmacion,
+                    titulo: 'Exito',
+                  ),
+                ),
+              );
+              Navigator.of(context).pop();
+            }
+          } else {
+            context.read<NotificacionesBloc>().add(
+              OnNuevaNotificacionEvent(
+                Notificacion(
+                  descripcion: state.error,
+                  tipoNotificacion: TipoNotificacion.error,
+                  titulo: 'Error',
+                ),
+              ),
+            );
           }
-          if (state.accion == Environment.blocOnValidarModeloPrueba) {
-            log(state.accion);
-            context.read<BlocPruebaBloc>().add(const OnGuardarModeloPrueba());
-          }
-          if (state.accion == Environment.blocOnGuardarModeloPrueba) {
-            log(state.accion);
-            log('Item Guardado con exito');
-            Navigator.of(context).pop();
-          }
-          if (state.accion == Environment.blocOnEliminarModeloPrueba) {
-            log(state.accion);
-            log('Item Eliminado con exito');
-            Navigator.of(context).pop();
-          }
-        }
-      },child:Scaffold(
+        },
+        child: Scaffold(
           body: Center(
               child: Card(
             child: Container(
@@ -55,14 +96,14 @@ class ViewLista extends StatelessWidget {
               height: 500,
               width: 600,
               child: Column(
-                children: const[
-                   _TituloPrincipal(),
-                   SizedBox(
+                children: const [
+                  _TituloPrincipal(),
+                  SizedBox(
                     height: 10,
                   ),
-                   _BotonOrdenarTabla(),
-                   _TablaElementos(),
-                   SizedBox(
+                  _BotonOrdenarTabla(),
+                  _TablaElementos(),
+                  SizedBox(
                     height: 15,
                   ),
                   _BotonNuevoModelo()
@@ -70,8 +111,7 @@ class ViewLista extends StatelessWidget {
               ),
             ),
           )),
-        )    
-    );
+        ));
   }
 }
 
@@ -115,10 +155,8 @@ class _TablaElementos extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 color: const Color(0xffF5F5F5),
-              ),            
-              constraints: const BoxConstraints(
-                minHeight: 150
               ),
+              constraints: const BoxConstraints(minHeight: 150),
               width: double.infinity,
               child: DataTable(
                   horizontalMargin: 0,
@@ -126,7 +164,7 @@ class _TablaElementos extends StatelessWidget {
                   headingRowHeight: 20,
                   dataRowHeight: 20,
                   headingRowColor: MaterialStateProperty.all<Color>(Colors.grey.withOpacity(0.2)),
-                  columns:  const [
+                  columns: const [
                     DataColumn(
                       label: Padding(
                         padding: EdgeInsets.only(left: 10),
@@ -159,9 +197,7 @@ class _TablaElementos extends StatelessWidget {
                             (e) => DataRow(
                               cells: [
                                 DataCell(
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(e.id)),
+                                  Padding(padding: const EdgeInsets.only(left: 10), child: Text(e.id)),
                                   onTap: () => context.read<BlocPruebaBloc>().add(OnModificarModeloPrueba(idModeloPrueba: e.id)),
                                 ),
                                 DataCell(
@@ -210,8 +246,8 @@ class _BotonOrdenarTabla extends StatelessWidget {
               Text(
                 'Ordenar',
                 style: TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -239,6 +275,3 @@ class _TituloPrincipal extends StatelessWidget {
     );
   }
 }
-
-
-
