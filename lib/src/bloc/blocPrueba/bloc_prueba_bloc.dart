@@ -161,7 +161,18 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
 
       emit(state.copyWith(isWorking: false, lstpruebaModel: lstpruebaModel, error: error, accion: Environment.blocOnOrdenarModeloPrueba));
     } catch (e) {
-      emit(state.copyWith(isWorking: false, accion: Environment.blocOnOrdenarModeloPrueba));
+      String error = '';
+      List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
+      if (lstpruebaModel.isNotEmpty) {
+        lstpruebaModel.sort((a, b) => (a.id).compareTo((b.id)));
+      } else {
+        error = 'La lista que intenta ordenar se encuentra vacia';
+      }
+      emit(state.copyWith(
+        isWorking: false,
+        lstpruebaModel: lstpruebaModel,
+         error: error,
+        accion: Environment.blocOnOrdenarModeloPrueba));
     }
   }
 }
