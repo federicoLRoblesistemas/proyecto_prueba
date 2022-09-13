@@ -116,16 +116,12 @@ class _ItemFormulario extends StatelessWidget {
     required this.valor,
     required this.onChanged,
     required this.isEditable,
-    this.margenInferior,
-    this.isLabel = false,
   }) : super(key: key);
 
   final String titulo;
   final String valor;
   final Function(String) onChanged;
   final bool isEditable;
-  final double? margenInferior;
-  final bool? isLabel;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -142,9 +138,6 @@ class _ItemFormulario extends StatelessWidget {
               onChanged.call(value);
             },
           ),
-        ),
-        SizedBox(
-          height: margenInferior ?? 0,
         ),
       ],
     );

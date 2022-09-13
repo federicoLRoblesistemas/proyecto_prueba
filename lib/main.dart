@@ -16,7 +16,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => BlocPruebaBloc(),),
         BlocProvider(create: (BuildContext context) => NotificacionesBloc(),),
       ],
-      child: const MaterialApp(
+      child:  const MaterialApp(
+        // theme: ThemeData.dark(),
         debugShowCheckedModeBanner: false,
         title: 'Material App',
         home: HomePage(),

@@ -97,7 +97,6 @@ class BlocPruebaBloc extends Bloc<BlocPruebaEvent, BlocPruebaState> {
       ModeloPruebaModel pruebaModel = state.pruebaModel;
       List<ModeloPruebaModel> lstpruebaModel = state.lstpruebaModel;
 
-      //TODO: Controlar que lista no esta vacia???
       for (ModeloPruebaModel modelo in state.lstpruebaModel) {
         if (modelo.id == pruebaModel.id) {
           lstpruebaModel.remove(modelo);

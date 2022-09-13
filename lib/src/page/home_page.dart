@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
       body: Stack(
         alignment: Alignment.center,
         children: [
-          ViewLista(),
+          const ViewLista(),
           BlocBuilder<NotificacionesBloc, NotificacionesState>(
             builder: (context, state) {
               return Column(
